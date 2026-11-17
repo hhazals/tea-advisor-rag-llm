@@ -1,6 +1,6 @@
 # Evening Drink
 
-A small app that suggests an evening herbal tea, kefir or kombucha (such hazal things) based on what you ate during the day or typed in text area.
+Suggesting an evening tea, kefir or kombucha (such hazal things) based on what you ate during the day or typed in text area.
 
 The goal is to try few products/tools together and having a free-text:
 
