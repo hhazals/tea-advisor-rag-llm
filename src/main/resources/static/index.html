@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Akşam İçeceği</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+    <h1>Akşam İçeceği</h1>
+
+    <section>
+        <h2>Bugün ne yedin?</h2>
+        <form id="food-form">
+            <label>Öğün
+                <select name="mealType">
+                    <option value="breakfast">Kahvaltı</option>
+                    <option value="lunch">Öğle</option>
+                    <option value="dinner">Akşam</option>
+                    <option value="snack">Ara öğün</option>
+                </select>
+            </label>
+            <label>Ne yedin?
+                <textarea name="text" rows="3" required maxlength="500"
+                          placeholder="ör. big mac, 6 nugget, patates ve kola zero"></textarea>
+            </label>
+            <button type="submit">Ekle</button>
+            <p id="food-status" class="status" role="status"></p>
+            <ul id="parsed" class="plain"></ul>
+        </form>
+
+        <h3>Bugün eklenenler</h3>
+        <ul id="today" class="plain"></ul>
+    </section>
+
+    <section>
+        <h2>Öneri</h2>
+        <fieldset>
+            <legend>Durumların (varsa)</legend>
+            <div id="conditions" class="checks"></div>
+        </fieldset>
+        <label class="inline"><input type="checkbox" id="evening"> Akşam saati (kafeinli içecekler geri planda)</label>
+        <button id="recommend-btn" type="button">Öneri al</button>
+        <p id="rec-status" class="status" role="status"></p>
+        <div id="result"></div>
+    </section>
+
+    <p class="disclaimer">Bu uygulama bilgilendirme amaçlıdır, sağlık tavsiyesi değildir. Sağlık sorunlarınız için bir uzmana danışın.</p>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

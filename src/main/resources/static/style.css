@@ -1,0 +1,69 @@
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: #222;
+    background: #fff;
+}
+
+main { max-width: 640px; margin: 0 auto; padding: 24px 16px 48px; }
+
+h1 { font-size: 1.5rem; margin: 0 0 24px; }
+h2 { font-size: 1.15rem; margin: 0 0 12px; }
+h3 { font-size: 1rem; margin: 20px 0 8px; }
+
+section { border-top: 1px solid #ddd; padding: 20px 0; }
+
+label { display: block; margin-bottom: 12px; font-size: .9rem; }
+label.inline { display: flex; gap: 8px; align-items: center; }
+
+textarea { resize: vertical; }
+
+input:not([type=checkbox]), select, textarea {
+    display: block;
+    width: 100%;
+    margin-top: 4px;
+    padding: 6px 8px;
+    font: inherit;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.row { display: flex; gap: 12px; }
+.row label { flex: 1; }
+
+button {
+    font: inherit;
+    padding: 6px 16px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+}
+button:hover { background: #f2f2f2; }
+button:disabled { opacity: .5; cursor: default; }
+button.link { border: 0; padding: 0 4px; color: #a00; background: none; }
+
+fieldset { border: 1px solid #ddd; border-radius: 4px; margin: 0 0 12px; padding: 8px 12px; }
+legend { font-size: .9rem; padding: 0 4px; }
+.checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.checks label { display: flex; gap: 6px; align-items: center; margin: 4px 0; }
+
+ul.plain { list-style: none; padding: 0; margin: 0; }
+ul.plain li { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; border-bottom: 1px solid #eee; }
+
+.status { min-height: 1.5em; margin: 8px 0 0; font-size: .9rem; color: #555; }
+.status.error { color: #a00; }
+.muted { color: #666; font-size: .85rem; }
+
+.drink { border: 1px solid #ddd; border-radius: 4px; padding: 12px 14px; margin-top: 12px; }
+.drink.best { border-color: #333; }
+.drink h3 { margin: 0 0 6px; }
+.drink p { margin: 6px 0; }
+.drink ul { margin: 6px 0; padding-left: 20px; font-size: .9rem; }
+.tag { font-size: .75rem; border: 1px solid #999; border-radius: 3px; padding: 0 5px; margin-left: 6px; color: #444; }
+.caution { color: #8a4b00; }
+
+.disclaimer { margin-top: 24px; font-size: .85rem; color: #666; }

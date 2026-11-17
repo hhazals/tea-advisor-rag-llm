@@ -1,0 +1,22 @@
+# V1 migration "CREATE EXTENSION vector" kullandığı için düz postgres değil pgvector imajı.
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: tea-rag-db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-tea_rag}
+      POSTGRES_USER: ${DB_USER:-tea_rag}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-tea_rag}
+    # Host'ta 5433: bu bilgisayarda 5432'yi yerel PostgreSQL 16 servisi (pgvector'süz) kullanıyor.
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    volumes:
+      - tea-rag-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  tea-rag-pgdata:

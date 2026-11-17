@@ -1,0 +1,9 @@
+target/
+.idea/
+*.iml
+.vscode/
+.env
+*.log
+
+# draw.io diyagramları (yerel)
+docs/*.drawio.xml
