@@ -2,15 +2,23 @@
 
 A small app that suggests an evening herbal tea, kefir or kombucha (such hazal things) based on what you ate during the day or typed in text area.
 
-The goal is to try few products/tools together and having a free-text + lmm:
+The goal is to try few products/tools together and having a free-text:
 
 - **Java 21 + Spring Boot** – REST API and a web UI
-- **Docker** (very simplified) – PostgreSQL + pgvector
+- **Docker** (very simplified) – pgvector
 - **LLM (Gemini)** – parses free-text user entries and writes the explanation for the suggestions
-- **RAG** – an ingestion pipeline downloads the source documents (EMA monographs as PDF, NCCIH/NHS pages as HTML, PubMed abstracts via the NCBI E-utilities API), cleans and chunks them, and embeds the chunks with Ollama into pgvector; at suggestion time the most similar chunks are retrieved and the LLM writes only from them, citing source IDs that are checked against the retrieval result
+- **RAG** – an ingestion pipeline downloads the source documents (EMA monographs as PDF, NCCIH/NHS pages as HTML, PubMed abstracts via the NCBI E-utilities API), chunks them and embeds the chunks with Ollama into pgvector; at suggestion time the most similar chunks are retrieved and the LLM writes only from them, citing source IDs that are checked against the retrieval result
 - **External API** – calorie data from USDA FoodData Central
 
 Ollama, Gemini and USDA FoodData Central were chosen because they are free to use (Ollama runs locally, Gemini and USDA have free API tiers), not because they are the best fit for the task.
+
+## Architecture
+
+![Architecture: RAG ingestion, retrieval and suggestion flow](docs/architecture.png)
+
+How free-text meal entries are parsed:
+
+![Meal parsing: Gemini turns Turkish dish names into English items for USDA](docs/meal-parsing.png)
 
 ## Running
 Requirements: Java 21, Docker, [Ollama](https://ollama.com/download)
