@@ -7,8 +7,8 @@ The goal is to try few products/tools together and having a free-text:
 - **Java 21 + Spring Boot** – REST API and a web UI
 - **Docker** (very simplified) – pgvector
 - **LLM (Gemini)** – parses free-text user entries and writes the explanation for the suggestions
-- **RAG** – an ingestion pipeline downloads the source documents (EMA monographs as PDF, NCCIH/NHS pages as HTML, PubMed abstracts via the NCBI E-utilities API), chunks them and embeds the chunks with Ollama into pgvector; at suggestion time the most similar chunks are retrieved and the LLM writes only from them, citing source IDs that are checked against the retrieval result
-- **External API** – calorie data from USDA FoodData Central
+- **RAG** – an ingestion pipeline downloads the source documents (EMA monographs as PDF, NCCIH/NHS pages as HTML, PubMed abstracts via the NCBI E-utilities API), chunks them and embeds the chunks with Ollama into pgvector. For suggestion the most similar chunks are retrieved and the LLM writes only from them, citing source IDs that are checked against the retrieval result
+- **External API** – USDA FoodData Central
 
 Ollama, Gemini and USDA FoodData Central were chosen because they are free to use (Ollama runs locally, Gemini and USDA have free API tiers), not because they are the best fit for the task.
 
