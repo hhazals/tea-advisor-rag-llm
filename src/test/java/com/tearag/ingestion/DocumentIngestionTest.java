@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
-/** Ingestion hattı uçtan uca: indirme mock, çıkarma/parçalama/DB/embedding gerçek (embedding modeli mock). */
+/** Ingestion: indirme mock, çıkarma/parçalama/DB/embedding gerçek (embedding modeli mock). */
 class DocumentIngestionTest extends IntegrationTest {
 
     @Autowired
@@ -44,7 +44,6 @@ class DocumentIngestionTest extends IntegrationTest {
                 return v;
             }).toList();
         });
-        // Varsayılan: her kaynak indirilemiyor; testler ilgili kaynakları açar
         doThrow(new FetchException("HTTP 403", null)).when(sourceFetcher).fetch(anyString());
     }
 
@@ -55,7 +54,6 @@ class DocumentIngestionTest extends IntegrationTest {
         jdbc.update("UPDATE sources SET ingested_at = NULL, ingest_status = NULL");
     }
 
-    /** ~600 kelimelik HTML makale: 60 cümle × 10 kelime. */
     private static byte[] longArticle(String topic) {
         String paragraphs = IntStream.range(0, 6).mapToObj(p -> "<p>" + IntStream.range(0, 10)
                         .mapToObj(s -> topic + " sentence " + (p * 10 + s) + " describes traditional use and safety.")
@@ -133,7 +131,6 @@ class DocumentIngestionTest extends IntegrationTest {
 
     @Test
     void multiDrinkSourceIsStoredForEachDrink() throws Exception {
-        // Kaynak 17 (ISAPP) hem kefir hem kombucha ile eşleşik
         doReturn(new FetchedDocument(Kind.HTML, longArticle("Fermented foods"), "u")).when(sourceFetcher).fetch(org.mockito.ArgumentMatchers.contains("doi.org/10.1038"));
         mvc.perform(post("/admin/ingest"));
 

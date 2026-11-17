@@ -19,10 +19,8 @@
 
     <properties>
         <java.version>21</java.version>
-        <!-- Docker Engine 29+ eski API sürümlerini reddediyor; 1.21.4 bunu destekliyor -->
         <testcontainers.version>1.21.4</testcontainers.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- 1.1.x = Spring Boot 3.5 hattı (2.x Boot 4 içindir) -->
         <spring-ai.version>1.1.8</spring-ai.version>
     </properties>
 
@@ -56,7 +54,6 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- PostgreSQL + Flyway (Flyway 10+ için Postgres modülü ayrı) -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -71,19 +68,16 @@
             <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
 
-        <!-- Embedding: yerel Ollama (paraphrase-multilingual, 768 boyut) -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-model-ollama</artifactId>
         </dependency>
 
-        <!-- LLM: Gemini (Google GenAI, API anahtarıyla; Google Cloud projesi gerekmez) -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-model-google-genai</artifactId>
         </dependency>
 
-        <!-- Belge ingestion: PDF ve HTML'den metin çıkarma -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
@@ -95,7 +89,6 @@
             <version>1.23.2</version>
         </dependency>
 
-        <!-- Test: migration'ları gerçek bir pgvector konteynerinde doğrular -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

@@ -1,3 +1,4 @@
+//bu scripte review lazım 
 package com.tearag.meal;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -31,14 +32,14 @@ class MealApiTest extends IntegrationTest {
     @Autowired
     JdbcTemplate jdbc;
 
-    int pide;    // 260 kcal/100g
-    int ayran;   // kalori bilinmiyor
-    int baklava; // 430 kcal/100g
+
+        //denediklerim bi kalsın burada
+    int pide;    
+    int baklava; 
 
     @BeforeEach
     void seedFoods() {
         pide = insertFood("Pide", 1, "260");
-        ayran = insertFood("Ayran", null, null);
         baklava = insertFood("Baklava", 4, "430");
     }
 
@@ -67,7 +68,6 @@ class MealApiTest extends IntegrationTest {
                 .andExpect(jsonPath("$.totalKcal").value(650.0))
                 .andExpect(jsonPath("$.kcalComplete").value(false));
 
-        // DB'de küçük harfle saklanıyor (CHECK kısıtı)
         String stored = jdbc.queryForObject("SELECT meal_type FROM meals", String.class);
         org.assertj.core.api.Assertions.assertThat(stored).isEqualTo("lunch");
     }
@@ -100,12 +100,11 @@ class MealApiTest extends IntegrationTest {
                  "items": [{"foodId": %d, "portionGram": 200}, {"foodId": %d, "portionGram": 250}]}"""
                 .formatted(pide, ayran)));
 
-        // pide kalıyor (porsiyon değişiyor), ayran çıkıyor, baklava ekleniyor
         mvc.perform(put("/api/meals/{id}", id).contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"mealDate": "2026-11-17", "mealType": "dinner",
                                  "items": [{"foodId": %d, "portionGram": 100}, {"foodId": %d, "portionGram": 50}]}"""
-                                .formatted(pide, baklava)))
+                                .formatted(pide, baklava))) //mesela
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items", hasSize(2)))
                 .andExpect(jsonPath("$.items[0].foodName").value("Baklava"))

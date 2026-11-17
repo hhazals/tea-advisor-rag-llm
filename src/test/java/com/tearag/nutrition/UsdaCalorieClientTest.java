@@ -24,7 +24,7 @@ import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient;
 
-/** USDA cevap ayrıştırma testi; gerçek API çağrılmaz. Örnek JSON gerçek cevap formatındandır. */
+/** USDA cevap ayrıştırma */
 class UsdaCalorieClientTest {
 
     private MockRestServiceServer server;

@@ -44,7 +44,7 @@ class RagRecommendationTest extends IntegrationTest {
     @Autowired
     JdbcTemplate jdbc;
 
-    /** Tüm parçalar bu vektörle embed edilir; sorgu da aynı vektörü alırsa benzerlik 1. */
+    /** Embed. sorgu da aynı vektörü alırsa benzerlik 1. */
     static final float[] CHUNK_VECTOR = unit(0);
 
     @BeforeEach
@@ -84,7 +84,6 @@ class RagRecommendationTest extends IntegrationTest {
                 .andExpect(jsonPath("$.sources", hasSize(1)))
                 .andExpect(jsonPath("$.sources[0].url", containsString("ema.europa.eu")))
                 .andExpect(jsonPath("$.usedChunkIds", hasSize(3)))
-                // seçim ve alternatifler kural motorundan, değişmez
                 .andExpect(jsonPath("$.alternatives[0].drink.slug").value("chamomile"));
 
         ArgumentCaptor<Prompt> prompt = ArgumentCaptor.forClass(Prompt.class);
