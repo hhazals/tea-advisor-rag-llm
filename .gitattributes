@@ -1,3 +1,2 @@
-# mvnw Unix betiği LF, Windows betiği CRLF kalmalı
 mvnw text eol=lf
 *.cmd text eol=crlf
