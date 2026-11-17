@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 class TextChunkerTest {
 
-    /** "Sentence N has exactly ten words in it for testing ok." → 10 kelime. */
     private static String sentence(int n) {
         return "Sentence " + n + " has exactly ten words in it for testing.";
     }
@@ -20,13 +19,13 @@ class TextChunkerTest {
 
     @Test
     void packsSentencesUpToMaxWordsWithOverlap() {
-        // 40 cümle × 10 kelime = 400 kelime; max 100, örtüşme 20 → her yeni parça önceki son 2 cümleyle başlar
+        // max 100, örtüşme 20 → her yeni parça önceki son 2 cümleyle başlar
         List<String> chunks = TextChunker.chunk(List.of(paragraph(0, 40)), 100, 20, 25);
 
         assertThat(chunks).allSatisfy(c -> assertThat(TextChunker.wordCount(c)).isLessThanOrEqualTo(100));
         assertThat(chunks.get(0)).startsWith("Sentence 0 ").endsWith("Sentence 9 has exactly ten words in it for testing.");
         assertThat(chunks.get(1)).startsWith("Sentence 8 "); // örtüşme: 8 ve 9 tekrar
-        // her cümle en az bir parçada
+
         assertThat(IntStream.range(0, 40)).allSatisfy(i ->
                 assertThat(chunks).anyMatch(c -> c.contains("Sentence " + i + " has")));
     }
@@ -39,7 +38,6 @@ class TextChunkerTest {
 
     @Test
     void shortTailIsMergedIntoPreviousChunk() {
-        // 10 cümle sığar, 11. cümle (10 kelime < min 25) ayrı parça olmaz
         List<String> chunks = TextChunker.chunk(List.of(paragraph(0, 11)), 100, 0, 25);
         assertThat(chunks).hasSize(1);
         assertThat(chunks.get(0)).contains("Sentence 10 has");

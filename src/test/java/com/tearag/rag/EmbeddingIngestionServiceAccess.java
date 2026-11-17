@@ -1,6 +1,5 @@
 package com.tearag.rag;
 
-/** Başka paketlerdeki testlerin pgvector biçimlendiricisini kullanabilmesi için. */
 public final class EmbeddingIngestionServiceAccess {
 
     private EmbeddingIngestionServiceAccess() {

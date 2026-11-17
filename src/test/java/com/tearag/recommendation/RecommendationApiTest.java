@@ -16,8 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-/**
- * Beklenen puanlar V2 seed verisindeki drink_rules'tan elle hesaplandı
+/** Bize kalmış kural:
  * (primary 10, alternative 5; akşam yemeği ağırlığı 2; her caution × 0,5).
  * Kategori id'leri: 1 pizza_pide, 2 red_meat_bbq, 3 chicken, 4 sweets_chocolate, 5 pasta.
  */
@@ -41,7 +40,6 @@ class RecommendationApiTest extends IntegrationTest {
     @Test
     void picksPrimaryDrinkWithTieBrokenAlternatives() throws Exception {
         meal("lunch", food("cheese pizza", 1));
-        // pizza: rezene 10, papatya/kefir/kombucha 5 → eşitlik id ile: papatya(4), kefir(6)
         recommend("")
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.generatedBy").value("rules"))
@@ -60,7 +58,6 @@ class RecommendationApiTest extends IntegrationTest {
     void dinnerCountsDoubleAndCategoriesAccumulate() throws Exception {
         meal("lunch", food("cheese pizza", 1));
         meal("dinner", food("creamy pasta", 5));
-        // pizza(×1) + makarna(×2): rezene 10+20=30, papatya 5+10=15, kefir 5+10=15, kombucha 5
         recommend("")
                 .andExpect(jsonPath("$.categories", hasSize(2)))
                 .andExpect(jsonPath("$.categories[1].slug").value("pasta"))
@@ -74,8 +71,6 @@ class RecommendationApiTest extends IntegrationTest {
     @Test
     void cautionHalvesScoreAndLosesTies() throws Exception {
         meal("dinner", food("lamb kebab", 2));
-        // mangal(×2): zencefil 20 → hamilelik caution → 10; rezene 10; kefir 10
-        // eşit puanda uyarısı az olan önde: rezene, kefir, zencefil
         recommend("pregnancy")
                 .andExpect(jsonPath("$.recommendation.drink.slug").value("fennel"))
                 .andExpect(jsonPath("$.alternatives[0].drink.slug").value("kefir"))
@@ -89,7 +84,6 @@ class RecommendationApiTest extends IntegrationTest {
     @Test
     void eveningLowersCaffeinatedKombucha() throws Exception {
         meal("lunch", food("grilled chicken", 3));
-        // tavuk: papatya 10, rezene/kefir/kombucha 5; akşam: kombucha 2,5 → son sıraya düşer
         mvc.perform(get("/api/recommendation").param("date", DAY).param("evening", "true").param("llm", "false"))
                 .andExpect(jsonPath("$.evening").value(true))
                 .andExpect(jsonPath("$.recommendation.drink.slug").value("chamomile"))
@@ -99,7 +93,6 @@ class RecommendationApiTest extends IntegrationTest {
     @Test
     void excludeRemovesDrinkAndExplainsWhy() throws Exception {
         meal("lunch", food("waffle", 4));
-        // tatlı: melisa 10 (12 yaş altı exclude), papatya 5, nane pasif
         recommend("under_12")
                 .andExpect(jsonPath("$.recommendation.drink.slug").value("chamomile"))
                 .andExpect(jsonPath("$.alternatives", hasSize(0)))
@@ -113,7 +106,6 @@ class RecommendationApiTest extends IntegrationTest {
     @Test
     void conditionSpecificInfoNotesAreShown() throws Exception {
         meal("lunch", food("grilled chicken", 3));
-        // hamilelik: kombucha exclude; papatyanın hamilelik "info" notu gösterilir
         recommend("pregnancy")
                 .andExpect(jsonPath("$.recommendation.drink.slug").value("chamomile"))
                 .andExpect(jsonPath("$.recommendation.infos[*].conditionCode", hasItem("pregnancy")))

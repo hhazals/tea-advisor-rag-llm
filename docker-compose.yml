@@ -1,4 +1,4 @@
-# V1 migration "CREATE EXTENSION vector" kullandığı için düz postgres değil pgvector imajı.
+# V1 migration "CREATE EXTENSION vector"  pgvector .
 services:
   db:
     image: pgvector/pgvector:pg16
@@ -7,7 +7,6 @@ services:
       POSTGRES_DB: ${DB_NAME:-tea_rag}
       POSTGRES_USER: ${DB_USER:-tea_rag}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-tea_rag}
-    # Host'ta 5433: bu bilgisayarda 5432'yi yerel PostgreSQL 16 servisi (pgvector'süz) kullanıyor.
     ports:
       - "${DB_PORT:-5433}:5432"
     volumes:

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-/** Tüm migration'ların temiz bir pgvector veritabanında hatasız çalıştığını doğrular. */
 class FlywayMigrationTest extends IntegrationTest {
 
     @Autowired
@@ -30,7 +29,7 @@ class FlywayMigrationTest extends IntegrationTest {
         assertThat(jdbc.queryForObject("SELECT count(*) FROM food_categories", Integer.class)).isEqualTo(6);
         assertThat(jdbc.queryForObject("SELECT count(*) FROM knowledge_chunks", Integer.class)).isEqualTo(21);
 
-        // Türkçe karakterlerin bozulmadan yüklendiğini kontrol et
+        // Türkçe karakterler
         assertThat(jdbc.queryForObject("SELECT name_tr FROM drinks WHERE slug = 'ginger'", String.class))
                 .isEqualTo("Zencefil");
         assertThat(jdbc.queryForObject("SELECT name_tr FROM food_categories WHERE slug = 'chicken'", String.class))

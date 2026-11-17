@@ -29,7 +29,7 @@ class EmbeddingIngestionTest extends IntegrationTest {
         jdbc.update("UPDATE knowledge_chunks SET embedding = NULL, embedding_model = NULL");
     }
 
-    /** Her metin için 768 boyutlu sahte vektör; ilk eleman metnin sırası (ayırt edilebilsin). */
+    /** Sahte vektör; ilk eleman metnin sırası (ayırt edilebilsin). */
     private void stubEmbeddings(int dims) {
         when(embeddingModel.embed(anyList())).thenAnswer(inv -> {
             List<String> texts = inv.getArgument(0);
@@ -58,7 +58,7 @@ class EmbeddingIngestionTest extends IntegrationTest {
                 WHERE embedding IS NOT NULL AND vector_dims(embedding) = 768
                   AND embedding_model = 'paraphrase-multilingual'""", Integer.class)).isEqualTo(21);
 
-        // Tekrar çağrı: yapılacak iş yok
+        // Tekrar çağrı yapılırsa hiçbir şey gömülmez
         mvc.perform(post("/admin/embed")).andExpect(jsonPath("$.embedded").value(0));
 
         // force: hepsi yeniden
