@@ -7,7 +7,7 @@ The goal is to try few products/tools together and having a free-text + lmm:
 - **Java 21 + Spring Boot** – REST API and a web UI
 - **Docker** (very simplified) – PostgreSQL + pgvector
 - **LLM (Gemini)** – parses free-text user entries and writes the explanation for the suggestions
-- **Simple RAG** – embeddings with Ollama, similarity search with pgvector; the LLM writes only from the retrieved source passages 
+- **RAG** – an ingestion pipeline downloads the source documents (EMA monographs as PDF, NCCIH/NHS pages as HTML, PubMed abstracts via the NCBI E-utilities API), cleans and chunks them, and embeds the chunks with Ollama into pgvector; at suggestion time the most similar chunks are retrieved and the LLM writes only from them, citing source IDs that are checked against the retrieval result
 - **External API** – calorie data from USDA FoodData Central
 
 Ollama, Gemini and USDA FoodData Central were chosen because they are free to use (Ollama runs locally, Gemini and USDA have free API tiers), not because they are the best fit for the task.
@@ -27,10 +27,11 @@ Requirements: Java 21, Docker, [Ollama](https://ollama.com/download)
    docker compose up -d
    ./mvnw spring-boot:run        (Windows: .\mvnw.cmd spring-boot:run)
    ```
-4. On first run, generate the embeddings once:
+4. On first run, ingest the source documents once (downloads, chunks and embeds them; takes a few minutes):
    ```
-   curl -X POST http://localhost:8080/admin/embed        (Windows PowerShell: curl.exe ...)
+   curl -X POST http://localhost:8080/admin/ingest        (Windows PowerShell: curl.exe ...)
    ```
+   Downloaded documents are not stored in the repository; only their chunks go into the local database.
 5. Open http://localhost:8080
 
 If the default Gemini model isn't available on your account, set `GEMINI_MODEL=...` in `.env`.

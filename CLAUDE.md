@@ -56,6 +56,19 @@ Embedding: **Ollama `paraphrase-multilingual`** (768 boyut, çok dilli, ~560 MB)
 - Canlı ölçüm: öneri isteği 6–13 sn (Ollama model yükleme + Gemini). Ön yüzde yükleniyor göstergesi gerekli.
 - Gözlem: Gemini bazen kaynak adını metne yazıyor ("NCCIH ... bildirmektedir") — kural 8'e aykırı ama zararsız; doğrulamada reddedilmiyor.
 
+## Belge ingestion (V5, `POST /admin/ingest`)
+- Amaç: "bu RAG değil" eleştirisine karşı gerçek ETL hattı. Paket: `com.tearag.ingestion`.
+- Fetch (`HttpSourceFetcher`): HTTP; PubMed sayfaları bot kontrolü gösterdiği için NCBI E-utilities efetch (XML). 16 (NIH ODS) 403, 18 (Health Canada) zaman aşımı → elle yazılmış parçaları kalır.
+- Extract (`TextExtractor`): PDF → PDFBox sayfa sayfa; HTML → jsoup, ana içerik (main/article) p/li/başlık; PubMed XML → başlık + etiketli özet.
+- Clean (`TextCleaner`): NFKC, e-posta/URL, EMA başlık/altbilgi/sayfa no; "References" başlığından sonrası ve kaynakça satırları (sayfa aralığı + yıl + yazar/doi) atılır.
+- Chunk (`TextChunker`): cümle sınırlı ~150 kelime, 30 kelime örtüşme, 25 kelimeden kısa parça yok (model 128 token ile eğitilmiş).
+- `source_drinks` kaynak→içecek eşleştirmesi; çoklu içecekli kaynak (17, 18) her içecek için ayrı satır. `origin` = curated | ingested; ingested parçada `claim_type` NULL ("belge alıntısı").
+- Yeniden ingest: kaynağın eski ingested parçaları silinir. İndirme hatasında eski parçalar korunur; indirilip metin çıkmazsa silinir.
+- Embedding öneki artık `"<name_tr> (<name_en>): <içerik>"` (parçalar İngilizce); retrieval sorgusu da aynı önekle. Önek değişirse `POST /admin/embed?force=true`.
+- İndirilen belgeler repoya/diske yazılmaz (telif); yalnızca parçalar DB'de.
+- 17.11.2026 canlı çalıştırma: 20 kaynaktan 14'ü parça üretti, toplam 267 ingested parça (+21 curated); ingest ~90 sn, tam embedding ~30 sn. EMA ürün özet sayfaları (2, 3, 10, 12) yalnızca başlık içeriyor → "boş". En iyi benzerlikler 0,46–0,69 (eşik 0,4 yeterli). Kalan gürültü: EMA ürün/doz tablosu parçaları (melisa) üst sıralara çıkabiliyor; kefir/kombucha için ISAPP genel fermente gıda metni (kimchi vb.) geliyor.
+- top-k 4. Gemini talimatına "parçalar İngilizce olabilir, Türkçe yaz; ilaç formu/dozaj tablosunu kullanma" eklendi.
+
 ## Embedding gözlemleri (paraphrase-multilingual, 17.11.2026)
 - Kosinüs benzerliği tipik olarak 0,3–0,6 arası. İyi eşleşmeler ~0,5+ ("şişkinlik ve gaz" → zencefil/melisa geleneksel kullanım 0,53; "hamilelikte güvenli mi" → kombucha güvenlik 0,59).
 - Zayıf: teknik terimleri günlük dile bağlayamıyor ("böbrek sağlığı" → limon otu "kreatinin klirensi" parçası yalnızca 3. sırada, 0,38). Bu yüzden retrieval her zaman `drink_id` ile filtrelenmeli; eşik RAG adımında ~0,4 civarından başlayıp ayarlanmalı.
@@ -72,6 +85,7 @@ Embedding: **Ollama `paraphrase-multilingual`** (768 boyut, çok dilli, ~560 MB)
 - [x] `NutritionService`: USDA FoodData Central (`RestClient`, POST `/v1/foods/search`) + `foods` tablosunda cache; `POST /api/foods/{id}/kcal/refresh`. Yemek isimleri İngilizce girilir.
 - [x] Ingestion: `POST /admin/embed` ile `knowledge_chunks.embedding` alanını doldur (Spring AI 1.1.8, `EmbeddingIngestionService`; 21 parça ilk yüklemede ~50 sn)
 - [x] Kural tabanlı öneri: `GET /api/recommendation?date=&conditions=reflux,pregnancy&evening=` (`RuleBasedRecommender`); geçerli durum kodları `GET /api/recommendation/conditions`. Durumlar istek bazlı (profil tablosu yok). `recommendations` tablosuna henüz yazılmıyor (GET yan etkisiz).
+- [x] Gerçek belge ingestion: fetch → extract → clean → chunk → embed (`POST /admin/ingest`, V5)
 - [x] RAG katmanı: retrieval (pgvector, cosine) + LLM gerekçe + kaynak doğrulama (`RagRecommendationService`, Gemini `gemini-3.5-flash-lite` / Spring AI google-genai)
 - [x] Serbest metinle öğün girişi: `POST /api/meals/text` {mealType, text} → Gemini kalemlere ayırır (name_en, name_tr, category slug|null, portion_gram) → doğrulama (bilinmeyen kategori null, porsiyon 1–2000 g, boşsa 150 g, en fazla 10 kalem, aynı ad birleşir) → `FoodService.findOrCreate` + `MealService.addItems` tek işlemde. LLM çağrısı DB işleminin dışında. Gemini yoksa 503 ve hiçbir şey kaydedilmez. Kullanıcı Türkçe yazabilir.
 - [x] Ön yüz (`static/index.html`, `app.js`, `style.css`): öğün + "Ne yedin?" metin kutusu (+ bugünün listesi) ve öneri kartları (1 en uygun + 2 alternatif, gerekçe ve kaynak linkleriyle). Günlük özet bölümü kullanıcı isteğiyle yapılmadı (ticari değil). Tasarım bilerek sade: gölge/süs yok. Metinler her zaman `textContent` ile basılır.

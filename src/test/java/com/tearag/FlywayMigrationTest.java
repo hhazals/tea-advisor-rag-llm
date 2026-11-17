@@ -16,7 +16,10 @@ class FlywayMigrationTest extends IntegrationTest {
     void migrationsApplyAndSeedDataIsLoaded() {
         Integer applied = jdbc.queryForObject(
                 "SELECT count(*) FROM flyway_schema_history WHERE success", Integer.class);
-        assertThat(applied).isEqualTo(4);
+        assertThat(applied).isEqualTo(5);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM source_drinks", Integer.class)).isEqualTo(22);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM knowledge_chunks WHERE origin = 'curated'",
+                Integer.class)).isEqualTo(21);
         assertThat(jdbc.queryForObject("""
                 SELECT format_type(atttypid, atttypmod) FROM pg_attribute
                 WHERE attrelid = 'knowledge_chunks'::regclass AND attname = 'embedding'""", String.class))

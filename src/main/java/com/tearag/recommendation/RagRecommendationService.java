@@ -46,6 +46,8 @@ public class RagRecommendationService {
             6. "drink" alanına sana verilen içecek kodunu aynen yaz; başka içecek önerme.
             7. "source_ids" alanına yalnızca gerçekten kullandığın parçaların kaynak_id değerlerini yaz.
             8. Metne URL, link veya kaynak adı yazma; kaynaklar ayrıca gösterilecek.
+            9. Parçalar İngilizce belge alıntıları olabilir; gerekçeyi her zaman Türkçe yaz. Parçada içecekle
+               ilgisi olmayan bilgi (ör. ilaç formu, dozaj tablosu) varsa onu kullanma.
             """;
 
     /** LLM'in döndürmesi beklenen JSON: {"drink": "...", "reason": "...", "source_ids": [..]} */
@@ -153,10 +155,11 @@ public class RagRecommendationService {
         return null;
     }
 
-    /** Parçalar "İçecek: içerik" biçiminde embed edildiği için sorgu da içecek adıyla başlar. */
+    /** Parçalar "İçecek (Drink): içerik" biçiminde embed edildiği için sorgu da aynı önekle başlar. */
     static String retrievalQuery(RecommendationResponse base) {
         String categories = base.categories().stream().map(CategorySummary::nameTr).collect(Collectors.joining(", "));
-        return base.recommendation().drink().nameTr() + ": " + categories
+        var drink = base.recommendation().drink();
+        return drink.nameTr() + " (" + drink.nameEn() + "): " + categories
                 + " yemeklerinden sonra sindirim, şişkinlik ve rahatlama için kullanımı";
     }
 
@@ -193,6 +196,9 @@ public class RagRecommendationService {
     }
 
     private static String claimTypeTr(String claimType) {
+        if (claimType == null) {
+            return "belge alıntısı"; // ingestion ile gelen parça (V5)
+        }
         return switch (claimType) {
             case "traditional_use" -> "geleneksel kullanım";
             case "well_established_use" -> "iyi belgelenmiş kullanım";

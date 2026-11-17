@@ -1,6 +1,7 @@
 package com.tearag.rag;
 
 import com.tearag.common.ApiException;
+import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,9 @@ public class EmbeddingIngestionService {
 
     /** V4 migration'daki vector(768) ile aynı olmalı. */
     static final int DIMENSIONS = 768;
+
+    /** Ollama'ya tek istekte gönderilen en fazla metin. */
+    static final int BATCH_SIZE = 32;
 
     private final JdbcTemplate jdbc;
     private final EmbeddingModel embeddingModel;
@@ -46,7 +50,7 @@ public class EmbeddingIngestionService {
     @Transactional
     public Result embed(boolean force) {
         List<Chunk> chunks = jdbc.query("""
-                SELECT k.id, d.name_tr || ': ' || k.content AS text
+                SELECT k.id, d.name_tr || ' (' || d.name_en || '): ' || k.content AS text
                 FROM knowledge_chunks k JOIN drinks d ON d.id = k.drink_id
                 WHERE ? OR k.embedding IS NULL OR k.embedding_model IS DISTINCT FROM ?
                 ORDER BY k.id""",
@@ -57,9 +61,15 @@ public class EmbeddingIngestionService {
             return new Result(0, total, modelName, DIMENSIONS);
         }
 
-        List<float[]> vectors;
+        List<float[]> vectors = new ArrayList<>(chunks.size());
         try {
-            vectors = embeddingModel.embed(chunks.stream().map(Chunk::text).toList());
+            for (int from = 0; from < chunks.size(); from += BATCH_SIZE) {
+                List<Chunk> batch = chunks.subList(from, Math.min(chunks.size(), from + BATCH_SIZE));
+                vectors.addAll(embeddingModel.embed(batch.stream().map(Chunk::text).toList()));
+                if (chunks.size() > BATCH_SIZE) {
+                    log.info("Embedding: {}/{}", Math.min(chunks.size(), from + BATCH_SIZE), chunks.size());
+                }
+            }
         } catch (RuntimeException e) {
             log.warn("Embedding üretilemedi ({}): {}", modelName, e.toString());
             throw ApiException.serviceUnavailable("Embedding servisine ulaşılamadı. Ollama çalışıyor mu ve '"

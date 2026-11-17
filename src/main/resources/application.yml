@@ -45,7 +45,7 @@ tearag:
   rag:
     # En iyi parçanın kosinüs benzerliği bunun altındaysa LLM çağrılmaz, kural tabanlı öneri döner
     similarity-threshold: 0.4
-    top-k: 3
+    top-k: 4
   usda:
     base-url: https://api.nal.usda.gov/fdc
     # DEMO_KEY saatte ~30 istekle sınırlı; kendi anahtarını .env'e USDA_API_KEY olarak yaz

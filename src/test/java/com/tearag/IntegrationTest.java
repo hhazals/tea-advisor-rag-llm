@@ -1,5 +1,6 @@
 package com.tearag;
 
+import com.tearag.ingestion.SourceFetcher;
 import com.tearag.nutrition.CalorieLookup;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.embedding.EmbeddingModel;
@@ -27,4 +28,8 @@ public abstract class IntegrationTest {
     /** Gemini testlerde çağrılmaz. */
     @MockitoBean
     protected ChatModel chatModel;
+
+    /** Belge indirme testlerde yapılmaz (ağ yok). */
+    @MockitoBean
+    protected SourceFetcher sourceFetcher;
 }
