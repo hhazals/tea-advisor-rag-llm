@@ -5,10 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-/**
- * "Chunk" adımı: cümle sınırlarına saygılı, örtüşmeli parçalama.
- * Embedding modeli (paraphrase-multilingual) 128 token ile eğitildiği için parçalar küçük tutulur (~150 kelime).
- */
 public final class TextChunker {
 
     public static final int MAX_WORDS = 150;
@@ -24,11 +20,6 @@ public final class TextChunker {
         return chunk(paragraphs, MAX_WORDS, OVERLAP_WORDS, MIN_WORDS);
     }
 
-    /**
-     * Paragraflar cümlelere bölünür; cümleler maxWords'ü aşmayacak şekilde parçalara doldurulur.
-     * Her yeni parça, öncekinin son cümleleriyle (en fazla overlapWords kelime) başlar.
-     * Sondaki yeni metin minWords'ten kısaysa ayrı parça yapılmaz, önceki parçaya eklenir.
-     */
     public static List<String> chunk(List<String> paragraphs, int maxWords, int overlapWords, int minWords) {
         List<String> sentences = new ArrayList<>();
         for (String p : paragraphs) {
@@ -88,8 +79,6 @@ public final class TextChunker {
         }
         return out;
     }
-
-    /** maxWords'ten uzun "cümle" (ör. noktasız tablo metni) kelime sınırından bölünür. */
     private static List<String> splitLong(String sentence, int maxWords) {
         String[] words = sentence.split("\\s+");
         if (words.length <= maxWords) {
